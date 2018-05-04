@@ -12,11 +12,9 @@ import java.awt.KeyboardFocusManager;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
@@ -24,40 +22,31 @@ import java.awt.event.WindowEvent;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Scanner;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.graphstream.graph.Graph;
 import org.graphstream.ui.geom.Point3;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.Units;
-import org.graphstream.ui.graphicGraph.stylesheet.Value;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 
 import fr.irit.smac.attributes.AVTAttribute;
 import fr.irit.smac.attributes.DoubleAttribute;
 import fr.irit.smac.attributes.DrawableAttribute;
-import fr.irit.smac.attributes.DrawableAttribute.Type;
 import fr.irit.smac.attributes.StringAttribute;
 import fr.irit.smac.core.AutoPlayThread;
 import fr.irit.smac.core.DisplayedGraph;
@@ -65,7 +54,6 @@ import fr.irit.smac.core.Links;
 import fr.irit.smac.lxplot.LxPlot;
 import fr.irit.smac.lxplot.commons.ChartType;
 import fr.irit.smac.lxplot.interfaces.ILxPlotChart;
-import fr.irit.smac.lxplot.server.LxPlotChart;
 import fr.irit.smac.model.Attribute;
 import fr.irit.smac.model.Entity;
 import fr.irit.smac.model.Snapshot;
@@ -73,6 +61,7 @@ import fr.irit.smac.model.SnapshotsCollection;
 import fr.irit.smac.model.Attribute.AttributeStyle;
 import javax.swing.JSlider;
 import javax.swing.JSeparator;
+import internationalisation.I18nProperties;
 
 /**
  * LinksWindows: This class
@@ -84,52 +73,132 @@ import javax.swing.JSeparator;
  */
 public class LinksWindows implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -562874670782175594L;
+
+	/**
+	 * The name of the experience.
+	 */
 	public String xpName;
 
+	/**
+	 * The main frame.
+	 */
 	private JFrame frame;
 
+	/**
+	 * A list of all AgentVizFrame alive.
+	 */
 	private ArrayList<AgentVizFrame> listAgent = new ArrayList<AgentVizFrame>();
 
+	/**
+	 * A list of all AgentVizFrame to remove.
+	 */
 	private ArrayList<AgentVizFrame> toRemove = new ArrayList<AgentVizFrame>();
 
+	/**
+	 * A list of all AgentVizFrame to add.
+	 */
 	private ArrayList<AgentVizFrame> toAdd = new ArrayList<AgentVizFrame>();
 
+	/**
+	 * The graph UI.
+	 */
 	private DisplayedGraph graph;
 
+	/**
+	 * The panel for the graph.
+	 */
 	private JPanel graphPanel;
 
+	/**
+	 * The view to interact with the user.
+	 */
 	private View view;
 
+	/**
+	 * The viewer from the graph.
+	 */
 	private Viewer viewer;
 
+	/**
+	 * This label will show the current snapnumber.
+	 */
 	private JLabel snapNumber;
 
+	/**
+	 * 
+	 * The CliksPipe to understand the input.
+	 */
+	@SuppressWarnings("unused")
 	private ClicksPipe clicksPipe;
 
+	/**
+	 * The label play.
+	 */
 	private JLabel lblPlay;
 
+	/**
+	 * The current snapshot number.
+	 */
 	private long currentSnap;
 
+	/**
+	 * If we are in synchronization or not.
+	 */
 	private boolean isSynch = true;
 
+	/**
+	 * The label to set the synchronization.
+	 */
 	private JLabel lblSynch;
 
+	/**
+	 * The link to the CSS for the graph.
+	 */
+	@SuppressWarnings("unused")
 	private final String linkToCss;
 
+	/**
+	 * Boolean to know if the infoWindows is open.
+	 */
 	private boolean isInfoWindowsOpened = false;
 
+	/**
+	 * Boolean to know if the mouse move or not.
+	 */
 	private boolean mouseMove = false;
-	
+
+	/**
+	 * Boolean to know if we are in loop.
+	 */
 	private boolean loop = false;
 
+	/**
+	 * The AutoPlayThread to update the window.
+	 */
 	private final AutoPlayThread autoPlayThread;
 
+	/**
+	 * Boolean to know if we are in state Moving.
+	 */
 	private boolean moving;
 
+	/**
+	 * Boolean to know if we are in state Drawing.
+	 */
 	private boolean drawing = false;
 
+	/**
+	 * The focus for the zoom, 1.0 is the max.
+	 */
 	private Double zoomFocus = 1.0;
 
+	/**
+	 * The window with all the relation.
+	 */
 	private RelationsVizFrame relationsWindow;
 
 	private JLabel lblStop;
@@ -138,16 +207,33 @@ public class LinksWindows implements Serializable {
 	private Links linksRef;
 	private JLabel lblInfo;
 
+	/**
+	 * The InfoWindow.
+	 */
 	private InfoWindow info;
 	private JLabel lblMoving;
-	private List<Map<Entity,List<String>>> charts;
-	private Map<Attribute,AttributeStyle> typeChart;
-	private long lastSnapNumDrawn = 0;
 	private JLabel lblDraw;
 
+	/**
+	 * The map of LxPlot to know which are still alive.
+	 */
 	private Map<String,ILxPlotChart> listLxPlot;
+	
+	/**
+	 * Stock all the Entity with their attribute in a list.
+	 */
+	private List<Map<Entity,List<String>>> charts;
+	
+	/**
+	 * The Map which correspond an Attribute and his style.
+	 */
+	private Map<Attribute,AttributeStyle> typeChart;
+	
+	/**
+	 * The lastSnapshot where we draw.
+	 */
+	private long lastSnapNumDrawn = 0;
 
-	private List<DrawableAttribute> tolook;
 	private JLabel lblLinks;
 	private JLabel lblZoomPlus;
 	private JLabel lblZoomMinus;
@@ -156,7 +242,15 @@ public class LinksWindows implements Serializable {
 	private JSlider slider;
 	private JSeparator separator;
 	private JButton btnLoop;
-	
+
+	/** To fetch the correct local content */
+	private I18nProperties i18nProperties = I18nProperties.getInstance();
+
+	/**
+	 * A queue for the thread which load the graph.
+	 */
+	private Queue<Long> numberQueue = new LinkedList<Long>();
+
 	/**
 	 * Creates a new JFrame and start to display the experiment in parameter.
 	 * 
@@ -166,6 +260,8 @@ public class LinksWindows implements Serializable {
 	 *            The path to the CSS file.
 	 * @param links
 	 *            A reference to the main application.
+	 * @param visible
+	 * 			  If the linksWindows will be visible.
 	 */
 	public LinksWindows(String xpName, String linkToCss, Links links, boolean visible) {
 		charts = new ArrayList<Map<Entity,List<String>>>();
@@ -192,6 +288,33 @@ public class LinksWindows implements Serializable {
 		}
 
 		/**
+		 * Thread use to load the graph
+		 */
+		/*Thread loadGraphThread = new Thread(){
+			public void run(){
+				while(true){
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					if(!numberQueue.isEmpty()){
+						Long numb = numberQueue.poll();
+						if(numb != null){
+							synchronized(graph){
+								boolean res = graph.loadGraph(numb);
+								if(!res)
+									viewer.disableAutoLayout();
+							}
+						}
+					}
+				}
+			}
+		};
+
+		loadGraphThread.start();*/
+
+		/**
 		 * Thread used to understand the user's input
 		 */
 		Thread t = new Thread(){
@@ -201,24 +324,43 @@ public class LinksWindows implements Serializable {
 				System.out.println("Example : SHOW 'entity 1' attr1 'attr 2' BAR SIZE=300");
 				System.out.println("NOSYNCHR is an option if you don't want the synchronisation of the chart");
 				System.out.println("DEFAULT : LIN (or the style of the Attribute if it set) and Size=100");
+				@SuppressWarnings("resource")
 				Scanner sc = new Scanner(System.in);
 				while(true){
+					
+					// The number of option ask by the users
 					int option = 0;
+					
+					//The default size
 					long size = 100;
+					
 					String ans = sc.nextLine();
+					
+					// Print the number of snapshot
 					if(ans.equals("NBSNAP")){
 						System.out.println("The number of snapshot is : " + getSnapCol().getMaxNum());
 					}
+					
+					// If the user want to draw a chart
 					if(ans.contains("SHOW ")){
+						
+						// If he asks for no synchronization we increment option
 						if(ans.contains("NOSYNCHR"))
 							option++;
+						
 						Map<Entity,List<String>> tmpMap = new HashMap<Entity,List<String>>();
 						ArrayList<String> tmpList = new ArrayList<String>();
+						
+						// we split the answer 
 						String[] spl = ans.split(" (?=(?:[^\']*\'[^\']*\')*[^\']*$)");
+						
+						// We remove the quotes
 						for(int i =0; i<spl.length;i++){
 							if(spl[i].contains("'"))
 								spl[i] = spl[i].split("'")[1];
 						}
+						
+						// We look for the style
 						AttributeStyle type = null;
 						if(ans.contains("BAR")){
 							type = AttributeStyle.BAR;
@@ -244,16 +386,20 @@ public class LinksWindows implements Serializable {
 							size = Long.parseLong(spl[spl.length-1].split("=")[1]);
 							option++;
 						}
+						
+						// We look for the entity
 						Entity e = getSnapCol().getEntity(spl[1], getCurrentSnapNumber());
 						if(e == null){
 							System.out.println("Entity not found");
 						}
 						else{
 							ArrayList<DrawableAttribute> atts = new ArrayList<DrawableAttribute>();
+							// If no option we draw directly 
 							if(spl.length-option == 2){
 								constructDraw(e,type,size,!ans.contains("NOSYNCHR"));
 							}
 							else{
+								// We look for the attributes
 								for(int i = 2; i < spl.length-option; i++){
 									String s = spl[i];
 									if(e.getAttributes().get(s) == null){
@@ -261,6 +407,7 @@ public class LinksWindows implements Serializable {
 									}
 									else
 									{
+										// For all the attributes of the attribute we get the style 
 										for (Attribute t : e.getAttributes().get(s)) {
 											AttributeStyle style = null;
 											DrawableAttribute datt = new DrawableAttribute(DrawableAttribute.Type.ENTITY, e.getName(), s, t);
@@ -271,18 +418,27 @@ public class LinksWindows implements Serializable {
 												style = type;
 												((DoubleAttribute) t).setTypeToDraw(type);
 											}
+											// We save the type of the chart
 											typeChart.put(t, style);
+											
+											// add to the list to draw
 											atts.add(datt);
+											
+											// Put the name in the list
 											listLxPlot.put(datt.getName()+datt.getAttribute().getName(),null);
 										}
+										
+										// We keep it for synchronization
 										if(!ans.contains("NOSYNCHR")){
 											tmpList.add(s);
 										}
 									}
+									// Save the tmpList in the chart
 									if(!ans.contains("NOSYNCHR")){
 										tmpMap.put(getSnapCol().getEntity(spl[1], getCurrentSnapNumber()), tmpList);
 										charts.add(tmpMap);
 									}
+									// Drawing of all attributes of atts
 									draw(e,size,atts,type);
 								}
 							}
@@ -297,10 +453,19 @@ public class LinksWindows implements Serializable {
 	}
 
 	/**
-	 * Method used to draw a charts with a click
+	 * Method used to draw a charts with a click when isDraw is true
+	 * 
 	 * @param e
+	 * 		The Entity to observ
+	 * 
 	 * @param type
+	 * 			The style of the chart
+	 * 
 	 * @param size
+	 * 			The size of the chart
+	 * 
+	 * @param synchr
+	 * 			If the chart will be update
 	 */
 	public void constructDraw(Entity e, AttributeStyle type,long size,boolean synchr){
 		Map<Entity,List<String>> tmpMap = new HashMap<Entity,List<String>>();
@@ -349,7 +514,7 @@ public class LinksWindows implements Serializable {
 		frame.setAutoRequestFocus(false);
 		frame.setBounds(200, 200, 900, 600);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setTitle("Links : Vizualizing agents' life");
+		frame.setTitle("Links : Vizualizing agents' life "+xpName);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
@@ -361,6 +526,7 @@ public class LinksWindows implements Serializable {
 		panel.add(toolBar_1);
 
 		lblPlay = new JLabel("");
+		lblPlay.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_PLAY_TOOLTIP));
 		lblPlay.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent arg0) {
 				if (arg0.getSource().equals(lblPlay))
@@ -369,6 +535,7 @@ public class LinksWindows implements Serializable {
 		});
 
 		lblSynch = new JLabel("");
+		lblSynch.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_SYNC_TOOLTIP));
 		lblSynch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -382,6 +549,7 @@ public class LinksWindows implements Serializable {
 		});
 
 		lblInfo = new JLabel("");
+		lblInfo.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_INFO_TOOLTIP));
 		LinksWindows myWindow = this;
 		lblInfo.addMouseListener(new MouseAdapter() {
 			@Override
@@ -404,14 +572,13 @@ public class LinksWindows implements Serializable {
 		toolBar_1.addSeparator();
 
 		lblLinks = new JLabel("");
-
-
+		lblLinks.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_LINKS_TOOLTIP));
 		lblLinks.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseReleased(MouseEvent e){
 				if(relationsWindow == null)
 					relationsWindow = new RelationsVizFrame(myWindow);
-					relationsWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				relationsWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		});
 		toolBar_1.add(lblLinks);
@@ -433,14 +600,17 @@ public class LinksWindows implements Serializable {
 		});
 		lblStop.setEnabled(false);
 		lblStop.setIcon(new ImageIcon(LinksWindows.class.getResource("/icons/stop.png")));
+		lblStop.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_STOP_TOOLTIP));
 		toolBar_1.add(lblStop);
 		toolBar_1.addSeparator();
 
+		// Go to the previous snapshot if possible
 		JLabel lblPrev = new JLabel("");
+		lblPrev.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_PREV_TOOLTIP));
 		lblPrev.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				switchToSnap(Math.max(1, currentSnap - Integer.valueOf(txtFramerate.getText())));
+				switchToSnap(Math.max(0, currentSnap - Integer.valueOf(txtFramerate.getText())));
 				notifyJump(Math.max(Math.min(currentSnap + Integer.valueOf(txtFramerate.getText()),
 						graph.getSnapCol().getMaxNum() - 1), 1));
 			}
@@ -449,7 +619,9 @@ public class LinksWindows implements Serializable {
 		toolBar_1.add(lblPrev);
 		toolBar_1.addSeparator();
 
+		// Go to the next snapshot if possible
 		JLabel lblNext = new JLabel("");
+		lblNext.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_NEXT_TOOLTIP));
 		lblNext.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -457,13 +629,40 @@ public class LinksWindows implements Serializable {
 						graph.getSnapCol().getMaxNum() - 1), 1));
 			}
 		});
-		ImageIcon iNext = new ImageIcon(LinksWindows.class.getResource("/icons/nextR.png"));;
+		ImageIcon iNext = new ImageIcon(LinksWindows.class.getResource("/icons/nextR.png"));
 		lblNext.setIcon(iNext);
 		toolBar_1.add(lblNext);
 		toolBar_1.addSeparator();
+		
+		JLabel btnAutoLayoutControl = new JLabel();
+		btnAutoLayoutControl.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_AUTOLAYOUT_TOOLTIP));
+		
+		ImageIcon autolayoutEnableIcon = new ImageIcon(LinksWindows.class.getResource("/icons/autolayout_enable.png"));
+		ImageIcon autolayoutDisableIcon = new ImageIcon(LinksWindows.class.getResource("/icons/autolayout_disable.png"));
+		ImageIcon autolayoutEnableNormIcon = new ImageIcon(autolayoutEnableIcon.getImage().getScaledInstance(autolayoutEnableIcon.getIconWidth(), autolayoutEnableIcon.getIconHeight(), Image.SCALE_DEFAULT));
+		ImageIcon autolayoutDisableNormIcon = new ImageIcon(autolayoutDisableIcon.getImage().getScaledInstance(autolayoutDisableIcon.getIconWidth(), autolayoutDisableIcon.getIconHeight(), Image.SCALE_DEFAULT));
+		btnAutoLayoutControl.setIcon(autolayoutEnableNormIcon);
 
+		btnAutoLayoutControl.addMouseListener(new MouseAdapter() {
+			private Boolean autoLayoutEnable = true;
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				autoLayoutEnable = !autoLayoutEnable;
+				if (autoLayoutEnable) {
+					viewer.enableAutoLayout();
+					btnAutoLayoutControl.setIcon(autolayoutEnableNormIcon);
+				} else {
+					viewer.disableAutoLayout();
+					btnAutoLayoutControl.setIcon(autolayoutDisableNormIcon);
+				}
+			}
+		});
+		
+		
+		// When trigger the user can move a node without open an AgentVizFrame
 		lblMoving = new JLabel("");
-
+		lblMoving.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_MOVING_TOOLTIP));
 		lblMoving.setIcon(new ImageIcon(new ImageIcon(LinksWindows.class.getResource("/icons/moving.png")).getImage().getScaledInstance(iNext.getIconWidth(), iNext.getIconHeight(), Image.SCALE_DEFAULT)));
 		lblMoving.addMouseListener(new MouseAdapter() {
 			@Override
@@ -477,8 +676,9 @@ public class LinksWindows implements Serializable {
 					frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
-		
+
 		btnLoop = new JButton("Loop ");
+		btnLoop.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_LOOP_TOOLTIP));
 		btnLoop.setForeground(Color.BLACK);
 		btnLoop.setFont(btnLoop.getFont().deriveFont(Font.BOLD));
 		btnLoop.setBackground(Color.RED);
@@ -493,16 +693,21 @@ public class LinksWindows implements Serializable {
 				else
 					btnLoop.setBackground(Color.RED);
 			}
-			
+
 		});
 		toolBar_1.add(btnLoop);
-		
+
 		separator = new JSeparator();
 		toolBar_1.add(separator);
+		toolBar_1.addSeparator();
+		toolBar_1.add(btnAutoLayoutControl);
+		toolBar_1.addSeparator();
 		toolBar_1.add(lblMoving);
 		toolBar_1.addSeparator();
 
+		// When trigger the cursor will change and the users can draw a chart on a click
 		lblDraw = new JLabel("");
+		lblDraw.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_DRAW_TOOLTIP));
 		lblDraw.setIcon(new ImageIcon(LinksWindows.class.getResource("/icons/draw.png")));
 		lblDraw.addMouseListener(new MouseAdapter(){
 			@Override
@@ -520,6 +725,7 @@ public class LinksWindows implements Serializable {
 		toolBar_1.addSeparator();
 
 		JButton lblSpeed = new JButton("Speed:");
+		lblSpeed.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_SPEED_TOOLTIP));
 
 		lblSpeed.addMouseListener(new MouseAdapter(){
 			@Override
@@ -528,7 +734,9 @@ public class LinksWindows implements Serializable {
 			}
 		});
 
+		//Use the method zoomPlus
 		lblZoomPlus = new JLabel("Zoom+ ");
+		lblZoomPlus.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_ZOOMPLUS_TOOLTIP));
 		lblZoomPlus.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseReleased(MouseEvent e){
@@ -538,7 +746,9 @@ public class LinksWindows implements Serializable {
 		toolBar_1.add(lblZoomPlus);
 		toolBar_1.addSeparator();
 
+		// Use the method zoomMinus
 		lblZoomMinus = new JLabel("Zoom - ");
+		lblZoomMinus.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_ZOOMMINUS_TOOLTIP));
 		lblZoomMinus.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseReleased(MouseEvent e){
@@ -548,7 +758,9 @@ public class LinksWindows implements Serializable {
 		toolBar_1.add(lblZoomMinus);
 		toolBar_1.addSeparator();
 
+		// Reset the zoom to be on the center and 100%
 		lblResetZoom = new JLabel("ResetZoom");
+		lblResetZoom.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_ZOOMRESET_TOOLTIP));
 		lblResetZoom.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e){
@@ -561,12 +773,14 @@ public class LinksWindows implements Serializable {
 		toolBar_1.add(lblResetZoom);
 		toolBar_1.addSeparator();
 
+		// Set the snapnumber to 1
 		lblResetSnap = new JLabel("ResetSnap");
+		lblResetSnap.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_SNAPRESET_TOOLTIP));
 		lblResetSnap.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e){
-				for(int i =0; i < 5;i++)
-				switchToSnap(1);
+				//for(int i =0; i < 5;i++)
+					switchToSnap(0);
 			}
 		});
 		toolBar_1.add(lblResetSnap);
@@ -582,6 +796,7 @@ public class LinksWindows implements Serializable {
 		txtSpeed.setColumns(10);
 
 		JButton lblFrameRate = new JButton("Frame Rate:");
+		lblFrameRate.setToolTipText(i18nProperties.getSafeText(I18nProperties.BUTTON_FRAMERATE_TOOLTIP));
 
 		lblFrameRate.addMouseListener(new MouseAdapter(){
 			@Override
@@ -609,6 +824,7 @@ public class LinksWindows implements Serializable {
 		frame.getContentPane().add(graphPanel, BorderLayout.CENTER);
 		graphPanel.setLayout(new BorderLayout(0, 0));
 
+		// Add a slider to zoom
 		slider = new JSlider();
 		slider.setValue(100);
 		slider.addChangeListener(new ChangeListener() {
@@ -620,7 +836,7 @@ public class LinksWindows implements Serializable {
 		});
 		graphPanel.add(slider, BorderLayout.SOUTH);
 
-		//Give the shortcut
+		//Give a shortcut for the label
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
 		.addKeyEventDispatcher(new KeyEventDispatcher(){
 			public boolean dispatchKeyEvent(KeyEvent e){
@@ -657,7 +873,7 @@ public class LinksWindows implements Serializable {
 								graph.getSnapCol().getMaxNum() - 1), 1));
 						break;
 					case KeyEvent.VK_B:
-						switchToSnap(Math.max(1, currentSnap - Integer.valueOf(txtFramerate.getText())));
+						switchToSnap(Math.max(0, currentSnap - Integer.valueOf(txtFramerate.getText())));
 						notifyJump(Math.max(Math.min(currentSnap + Integer.valueOf(txtFramerate.getText()),
 								graph.getSnapCol().getMaxNum() - 1), 1));
 						break;
@@ -709,6 +925,8 @@ public class LinksWindows implements Serializable {
 
 		});
 	}
+	
+		
 	private class ViewMouseListener extends MouseAdapter{
 		Point3 point = null;
 		@Override
@@ -718,7 +936,6 @@ public class LinksWindows implements Serializable {
 
 		@Override
 		public void mouseReleased(MouseEvent e){
-			double ratio = view.getCamera().getMetrics().ratioPx2Gu;
 			Point3 orx = view.getCamera().transformPxToGu(e.getX(), e.getY());
 			if((point.x != orx.x || point.y !=orx.y) && !moving && !mouseMove){
 				double newx =(point.x+orx.x)/2;
@@ -759,24 +976,29 @@ public class LinksWindows implements Serializable {
 	public void switchToSnap(long number) {
 		if(this.currentSnap == this.getMaxSnapNumber()-1 && loop)
 			number = 1;
-		boolean res = graph.loadGraph(number);
-		if(!res)
-			this.viewer.disableAutoLayout();
+		numberQueue.offer(number);
+		graph.loadGraph(number);
+		this.currentSnap = number;
 		setSnapNumber(number);
 		notifyJump(number);
 		updateCharts(number);
 		notifyDraw();
-		this.currentSnap = number;
-		
+
 	}
 
+	/**
+	 * Update the list of chart to update
+	 * 
+	 * @param number
+	 * 		The Snapshot number
+	 */
 	private void updateCharts(long number) {
 		List<Map<Entity,List<String>>> tmpList = new ArrayList<Map<Entity,List<String>>>();
 		for(Map<Entity,List<String>> h : this.charts){
 			Map<Entity,List<String>> map = new HashMap<Entity,List<String>>();
 			for(Entity e : h.keySet()){
 				for(String s : e.getAttributes().keySet()){
-					for(Attribute t : e.getAttributes().get(s)){
+					for(@SuppressWarnings("unused") Attribute t : e.getAttributes().get(s)){
 
 					}
 				}
@@ -799,6 +1021,11 @@ public class LinksWindows implements Serializable {
 		this.snapNumber.setText("Current Snap: " + text);
 	}
 
+	/**
+	 * Create the Graph
+	 * Create the viewer and the view 
+	 * Create the CliksPipe
+	 */
 	private void generateGraph() {
 		viewer = new Viewer(graph.getGraph(), Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
 		viewer.enableAutoLayout();
@@ -815,7 +1042,7 @@ public class LinksWindows implements Serializable {
 	public long getCurrentSnapNumber() {
 		return this.currentSnap;
 	}
-	
+
 	/**
 	 * Get the value of loop
 	 * 
@@ -825,6 +1052,7 @@ public class LinksWindows implements Serializable {
 		return this.loop;
 	}
 
+	@SuppressWarnings("unused")
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -877,6 +1105,15 @@ public class LinksWindows implements Serializable {
 
 	}
 
+	/**
+	 *  Add All the new AgentVizFrame to listAgent
+	 *  Notify all AgentVizFrame
+	 *  Remove all dead AgentVizFrame from listAgent and close them
+	 *  Notify the RelationWindow
+	 *  
+	 * @param number
+	 * 			The Snapshot number
+	 */
 	private synchronized void notifyJump(long number) {
 		for (AgentVizFrame a : toAdd) {
 			listAgent.add(a);
@@ -958,6 +1195,7 @@ public class LinksWindows implements Serializable {
 		graph.getSnapCol().addSnapshot(s);
 	}
 
+	@SuppressWarnings("unused")
 	private void removeEntities(Snapshot s){
 		ArrayList<Map<Entity,List<String>>> removeList = new ArrayList<Map<Entity,List<String>>>();
 		for(Map<Entity,List<String>> l : this.charts){
@@ -994,37 +1232,52 @@ public class LinksWindows implements Serializable {
 	}
 
 	/**
-	 * 
+	 * set isInfoWindowsOpened to false
 	 */
 	public void inforInfoWindowsClosing() {
 		this.isInfoWindowsOpened = false;
 	}
 
+	/**
+	 * Return the viewer
+	 * 
+	 * @return viewer
+	 */
 	public Viewer getViewer() {
 		return viewer;
 	}
 
-	public View getView() {
-		return view;
-	}
-
+	/**
+	 * Return the xp name
+	 * 
+	 * @return xpName
+	 */
 	public String getXpName() {
 		return xpName;
 	}
 
+	/**
+	 * Return true if we are in state Moving
+	 * 
+	 * @return moving
+	 */
 	public boolean getMoving(){
 		return this.moving;
 	}
 
+	/**
+	 * Return true if we are in state Drawing
+	 * 
+	 * @return drawing
+	 */
 	public boolean getDrawing(){
 		return this.drawing;
 	}
 
-	public void isDraw(){
-		if(this.lblPlay.isEnabled())
-			notifyDraw();
-	}
 
+	/**
+	 * Dispose the frame
+	 */
 	public void close(){
 		this.frame.dispose();
 	}
@@ -1037,6 +1290,8 @@ public class LinksWindows implements Serializable {
 	 * 			The size
 	 * @param atts
 	 * 		All the attribute to represent
+	 * @param type
+	 * 		The type of the chart
 	 */
 	public synchronized void draw(Entity a,long drawSizeLong,  List<DrawableAttribute> atts,AttributeStyle type) {
 		long max = this.getCurrentSnapNumber();
@@ -1087,7 +1342,7 @@ public class LinksWindows implements Serializable {
 					}
 					if (style == AttributeStyle.AVRT) {
 						Double tab[] = (Double[]) theAttribute.getValue();
-						for (Double val : tab) {
+						for (@SuppressWarnings("unused") Double val : tab) {
 							LxPlot.getChart(
 									t.getType() + ">" + t.getName() + ":" + t.getCaracList() + ":" + " AVRT : " + s,
 									ChartType.LINE).add(s + "LOWER", timei, tab[0]);
@@ -1137,7 +1392,7 @@ public class LinksWindows implements Serializable {
 	public void notifyDraw(){
 		for(Map<Entity,List<String>> h : this.charts){
 			for(Entity e : h.keySet()){
-				tolook = new ArrayList<DrawableAttribute>();
+				ArrayList<DrawableAttribute> tolook = new ArrayList<DrawableAttribute>();
 				AttributeStyle style = null;
 				for(String s : h.get(e)){
 					ArrayList<Attribute> listTmp = new ArrayList<Attribute>();
@@ -1185,9 +1440,15 @@ public class LinksWindows implements Serializable {
 		slider.setValue(sl.intValue());
 
 	}
-	
+
+	/**
+	 * Set mouseMove
+	 * 
+	 * @param mouseMove
+	 * 			boolean
+	 */
 	public void setMouseMove(boolean mouseMove){
 		this.mouseMove = mouseMove;
 	}
-
+	
 }
