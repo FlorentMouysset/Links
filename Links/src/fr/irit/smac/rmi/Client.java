@@ -8,23 +8,23 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import fr.irit.smac.core.Links;
+import fr.irit.smac.model.Attribute.AttributeStyle;
 import fr.irit.smac.model.Entity;
 import fr.irit.smac.model.Snapshot;
-import fr.irit.smac.model.Attribute.AttributeStyle;
 
 /**
  * 
  * @author Marcillaud Guilhem
  * 
- * Class who gets the remote object from the server
+ *         Class who gets the remote object from the server
  *
  */
 public class Client {
 
 	private Remote remote;
-	public Client(){
-		try{
+
+	public Client() {
+		try {
 			String url = "rmi://" + InetAddress.getLocalHost().getHostAddress() + "/Links";
 			remote = Naming.lookup(url);
 		} catch (MalformedURLException e) {
@@ -39,10 +39,11 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
-	public Remote getRemote(){
+
+	public Remote getRemote() {
 		return remote;
 	}
+
 	public static void main(String[] args) {
 		System.out.println("Lancement du client");
 		try {
@@ -52,7 +53,7 @@ public class Client {
 			if (r instanceof LinksRemote) {
 				((LinksRemote) r).buildExperiment("test");
 
-				//links.dropExperiment("test");
+				// links.dropExperiment("test");
 				System.out.println();
 				Snapshot s2 = new Snapshot();
 				Entity a = s2.addEntity("Toto", "Humain");
@@ -62,7 +63,8 @@ public class Client {
 				a.addOneAttribute("Charct", "Bonbons", 6.0, AttributeStyle.BAR);
 				a.addOneAttribute("Charct", "Nom", "Toto");
 
-				// a.addOneAttribute("Domain", new AVRT("VRange1", new AVT("Up", 1, 0),
+				// a.addOneAttribute("Domain", new AVRT("VRange1", new AVT("Up",
+				// 1, 0),
 				// new AVT("Down", 1, -5), 10, -10));
 				Entity b = s2.addEntity("Rufus", "Dog");
 				b = s2.addEntity("Rufus", "Dog");
@@ -72,7 +74,7 @@ public class Client {
 
 				s2.addRelation("Luna", "Rufus", "LR", true, "seBattre");
 				s2.addRelation("Toto", "Luna", "LU", true, "seBattre");
-				((LinksRemote) r).addSnapshot(s2,"test");
+				((LinksRemote) r).addSnapshot(s2, "test");
 
 			}
 		} catch (MalformedURLException e) {
@@ -86,7 +88,8 @@ public class Client {
 			e.printStackTrace();
 		}
 		System.out.println("Fin du client");
-		while(true);
+		while (true)
+			;
 	}
 
 }

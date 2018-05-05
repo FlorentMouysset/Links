@@ -9,7 +9,6 @@ import java.util.Scanner;
 import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -21,7 +20,6 @@ import fr.irit.smac.attributes.DoubleAttribute;
 import fr.irit.smac.attributes.StringAttribute;
 import fr.irit.smac.core.Links;
 import fr.irit.smac.model.Attribute.AttributeStyle;
-import fr.irit.smac.model.Attribute.AttributeType;
 import fr.irit.smac.ui.LinksWindows;
 
 /**
@@ -50,7 +48,7 @@ public class SnapshotsCollection implements Serializable {
 	 * Create the collection
 	 * 
 	 * @param links
-	 * 			The LinksWindows
+	 *            The LinksWindows
 	 */
 	public SnapshotsCollection(LinksWindows links) {
 		this.links = links;
@@ -68,7 +66,7 @@ public class SnapshotsCollection implements Serializable {
 	 * Add a Snapshot to the collection
 	 *
 	 * @param s
-	 * 			The Snapshot
+	 *            The Snapshot
 	 */
 	public void addSnapshot(Snapshot s) {
 
@@ -81,7 +79,7 @@ public class SnapshotsCollection implements Serializable {
 
 		for (Entity a : s.getEntityList()) {
 			caract = new Document("Type", "Entity").append("Name", a.getName()).append("Class", a.getType().toString())
-					.append("CoorX", ""+a.getCoorX()).append("CoorY", ""+a.getCoorY());
+					.append("CoorX", "" + a.getCoorX()).append("CoorY", "" + a.getCoorY());
 
 			for (String atName : a.getAttributes().keySet()) {
 				attributeList = new Document();
@@ -122,8 +120,9 @@ public class SnapshotsCollection implements Serializable {
 
 	/**
 	 * Return the Snapshot with the given number
+	 * 
 	 * @param s
-	 * 			The number of the snapshot
+	 *            The number of the snapshot
 	 * @return snap
 	 */
 	public Snapshot getSnaptshot(long s) {
@@ -151,10 +150,11 @@ public class SnapshotsCollection implements Serializable {
 
 	/**
 	 * Add a Document to a Snapshot
+	 * 
 	 * @param snap
-	 * 			The Snapshot
+	 *            The Snapshot
 	 * @param d
-	 * 			The Document
+	 *            The Document
 	 */
 	private void addToSnap(Snapshot snap, Document d) {
 		Iterator<Entry<String, Object>> it = d.entrySet().iterator();
@@ -166,10 +166,10 @@ public class SnapshotsCollection implements Serializable {
 			double coorx = Double.parseDouble((String) it.next().getValue());
 			double coory = Double.parseDouble((String) it.next().getValue());
 			Entity a;
-			if(coorx == -10000 && coory == -10000)
+			if (coorx == -10000 && coory == -10000)
 				a = snap.addEntity(name, uiClass);
 			else
-				a = snap.addEntity(name, uiClass, coorx,coory);
+				a = snap.addEntity(name, uiClass, coorx, coory);
 
 			while (it.hasNext()) {
 				/* For any caracteristic list */
@@ -223,6 +223,7 @@ public class SnapshotsCollection implements Serializable {
 
 	/**
 	 * TODO
+	 * 
 	 * @param caracName
 	 * @param typeToDraw
 	 * @param toString
@@ -252,8 +253,8 @@ public class SnapshotsCollection implements Serializable {
 					Double upcValue = Double.valueOf(sc.next());
 					Double updelta = Double.valueOf(sc.next());
 					Double upperValue = Double.valueOf(sc.next());
-					t = new AVRTAttribute(caracName, new AVTAttribute("Up", updelta, upcValue), new AVTAttribute("Down", downdelta, downcValue),
-							upperValue, lowerValue);
+					t = new AVRTAttribute(caracName, new AVTAttribute("Up", updelta, upcValue),
+							new AVTAttribute("Down", downdelta, downcValue), upperValue, lowerValue);
 				}
 			}
 		}
@@ -262,10 +263,11 @@ public class SnapshotsCollection implements Serializable {
 
 	/**
 	 * Return the Entity who correspond to the id
+	 * 
 	 * @param id
-	 * 			The id
+	 *            The id
 	 * @param snap
-	 * 			The snapshot
+	 *            The snapshot
 	 * @return getSnaptshot(snap).getEntity(id)
 	 */
 	public Entity getEntity(String id, long snap) {
@@ -274,10 +276,11 @@ public class SnapshotsCollection implements Serializable {
 
 	/**
 	 * Return the relation who correspond to the id
+	 * 
 	 * @param id
-	 * 			The id
+	 *            The id
 	 * @param snap
-	 * 			The snapshot
+	 *            The snapshot
 	 * @return getSnaptshot(snap).getRelation(id)
 	 */
 	public Relation getRelation(String id, long snap) {
@@ -286,6 +289,7 @@ public class SnapshotsCollection implements Serializable {
 
 	/**
 	 * Return the maxNum
+	 * 
 	 * @return maxNum
 	 */
 	public long getMaxNum() {
@@ -294,10 +298,11 @@ public class SnapshotsCollection implements Serializable {
 
 	/**
 	 * Return a list of all relations
+	 * 
 	 * @param aname
-	 * 			The name of the relation
+	 *            The name of the relation
 	 * @param num
-	 * 			The number of the snapshot
+	 *            The number of the snapshot
 	 * @return relations
 	 */
 	public ArrayList<Relation> getRelations(String aname, long num) {
@@ -315,19 +320,19 @@ public class SnapshotsCollection implements Serializable {
 	 * Set maxNum to 1
 	 */
 	public void resetNumber() {
-		maxNum=1;
+		maxNum = 1;
 	}
-	
-	public void test(){
+
+	public void test() {
 
 		FindIterable<Document> i = collection.find();
 		MongoCursor<Document> iter = i.iterator();
 		boolean entFind = false;
-		while(iter.hasNext() && !entFind){
+		while (iter.hasNext() && !entFind) {
 			Document d = iter.next();
-			entFind = d.toString().contains("0"+"=Document{{Type=Entity");
+			entFind = d.toString().contains("0" + "=Document{{Type=Entity");
 			System.out.println(d);
 		}
 	}
-	
+
 }

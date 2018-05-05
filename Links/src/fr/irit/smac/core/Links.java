@@ -102,7 +102,7 @@ public class Links implements Serializable {
 	 *            A list of empty arguments. Not used.
 	 */
 	public static void main(String args[]) {
-		Links links = new Links();
+		new Links();
 	}
 
 	/**
@@ -477,11 +477,11 @@ public class Links implements Serializable {
 				if (mongoConfig.equals("DEFAULT")) {
 					String[] commande = { "\"" + mongoPath + "\"" };
 					ProcessBuilder pb = new ProcessBuilder(commande);
-					Process p = pb.start();
+					pb.start();
 				} else {
 					String[] commande = { "\"" + mongoPath + "\" --config \"" + mongoConfig + "\"" };
 					ProcessBuilder pb = new ProcessBuilder(commande);
-					Process p = pb.start();
+					pb.start();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -493,7 +493,7 @@ public class Links implements Serializable {
 			String[] commande = { "mongod" };
 			try {
 				ProcessBuilder pb = new ProcessBuilder(commande);
-				Process p = pb.start();
+				pb.start();
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.err.println("Runtime error");

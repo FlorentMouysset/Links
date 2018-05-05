@@ -1,7 +1,6 @@
 package fr.irit.smac.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,11 +11,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -37,20 +34,16 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
-import org.graphstream.graph.Graph;
-import org.graphstream.ui.view.Viewer;
 
 import fr.irit.smac.attributes.AVTAttribute;
 import fr.irit.smac.attributes.DrawableAttribute;
 import fr.irit.smac.lxplot.LxPlot;
 import fr.irit.smac.lxplot.commons.ChartType;
 import fr.irit.smac.model.Attribute;
+import fr.irit.smac.model.Attribute.AttributeStyle;
 import fr.irit.smac.model.Entity;
 import fr.irit.smac.model.Relation;
 import fr.irit.smac.model.SnapshotsCollection;
-import fr.irit.smac.model.Attribute.AttributeStyle;
 
 public class AgentVizFrame extends JFrame {
 
@@ -96,11 +89,6 @@ public class AgentVizFrame extends JFrame {
 	private JButton btnNewButton;
 
 	/**
-	 * The boolean of the neighbouring.
-	 */
-	private boolean neigh = false;
-
-	/**
 	 * The size long of a chart.
 	 */
 	private long drawSizeLong = 50;
@@ -132,13 +120,15 @@ public class AgentVizFrame extends JFrame {
 	private JPanel panel;
 	private JLabel lblNewLabel;
 
-
-
 	/**
 	 * Create the frame.
-	 * @param a The entity to look at.
-	 * @param snapCol The reference to the snapshot collection.
-	 * @param links The reference to the links windows.
+	 * 
+	 * @param a
+	 *            The entity to look at.
+	 * @param snapCol
+	 *            The reference to the snapshot collection.
+	 * @param links
+	 *            The reference to the links windows.
 	 */
 	public AgentVizFrame(Entity a, SnapshotsCollection snapCol, LinksWindows links) {
 		me = this;
@@ -156,7 +146,7 @@ public class AgentVizFrame extends JFrame {
 		this.links = links;
 		snapNum = links.getCurrentSnapNumber();
 
-		setTitle(a.getName() + " Vizualization tool"+ "   Type : "+ a.getType());
+		setTitle(a.getName() + " Vizualization tool" + "   Type : " + a.getType());
 
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 592, 300);
@@ -307,21 +297,21 @@ public class AgentVizFrame extends JFrame {
 					/* Whole agent or relations selected */
 					if (path[i].getPath()[1].toString().contains("Relations")) {
 						for (Relation r : this.relations) {
-							if(r.getAttributes() != null)
+							if (r.getAttributes() != null)
 								for (String s : r.getAttributes().keySet()) {
 									for (Attribute t : r.getAttributes().get(s)) {
-										this.toLook.add(
-												new DrawableAttribute(DrawableAttribute.Type.RELATION, r.getName(), s, t));
+										this.toLook.add(new DrawableAttribute(DrawableAttribute.Type.RELATION,
+												r.getName(), s, t));
 									}
 								}
 						}
 					}
 					if (path[i].getPath()[1].toString().contains("Entity")) {
-						if(entity.getAttributes() != null)
+						if (entity.getAttributes() != null)
 							for (String s : entity.getAttributes().keySet()) {
 								for (Attribute t : entity.getAttributes().get(s)) {
-									this.toLook.add(
-											new DrawableAttribute(DrawableAttribute.Type.ENTITY, entity.getName(), s, t));
+									this.toLook.add(new DrawableAttribute(DrawableAttribute.Type.ENTITY,
+											entity.getName(), s, t));
 								}
 							}
 					}
@@ -331,12 +321,12 @@ public class AgentVizFrame extends JFrame {
 
 					if (path[i].getPath()[1].toString().contains("Relations")) {
 						Relation r = snapCol.getRelation(path[i].getPath()[2].toString(), this.currentFrameNum);
-						if(r != null && this.toLook != null){
-							if(r.getAttributes() != null)
+						if (r != null && this.toLook != null) {
+							if (r.getAttributes() != null)
 								for (String s : r.getAttributes().keySet()) {
 									for (Attribute t : r.getAttributes().get(s)) {
-										this.toLook
-										.add(new DrawableAttribute(DrawableAttribute.Type.RELATION, r.getName(), s, t));
+										this.toLook.add(new DrawableAttribute(DrawableAttribute.Type.RELATION,
+												r.getName(), s, t));
 									}
 								}
 						}
@@ -347,7 +337,7 @@ public class AgentVizFrame extends JFrame {
 						String s = path[i].getPath()[2].toString();
 						for (Attribute t : entity.getAttributes().get(s)) {
 							this.toLook
-							.add(new DrawableAttribute(DrawableAttribute.Type.ENTITY, entity.getName(), s, t));
+									.add(new DrawableAttribute(DrawableAttribute.Type.ENTITY, entity.getName(), s, t));
 						}
 					}
 					break;
@@ -359,9 +349,10 @@ public class AgentVizFrame extends JFrame {
 					if (path[i].getPath()[1].toString().contains("Relations")) {
 						Relation r = snapCol.getRelation(path[i].getPath()[2].toString(), this.currentFrameNum);
 						String s = path[i].getPath()[3].toString();
-						if(r.getAttributes() != null)
+						if (r.getAttributes() != null)
 							for (Attribute t : r.getAttributes().get(s)) {
-								this.toLook.add(new DrawableAttribute(DrawableAttribute.Type.RELATION, r.getName() , s, t));
+								this.toLook
+										.add(new DrawableAttribute(DrawableAttribute.Type.RELATION, r.getName(), s, t));
 							}
 
 					}
@@ -372,8 +363,8 @@ public class AgentVizFrame extends JFrame {
 						tmp = tmp.substring(tmp.indexOf("[") + 1, tmp.indexOf("]"));
 						if (entity != null) {
 							Attribute t = entity.getAttributesWithName(tmp);
-							this.toLook
-							.add(new DrawableAttribute(DrawableAttribute.Type.ENTITY, entity.getName() + entity.getType(), s, t));
+							this.toLook.add(new DrawableAttribute(DrawableAttribute.Type.ENTITY,
+									entity.getName() + entity.getType(), s, t));
 						}
 
 					}
@@ -398,12 +389,11 @@ public class AgentVizFrame extends JFrame {
 	}
 
 	/**
-	 * Method uses by LinksWindows 
-	 * Check if the synchronization is on
-	 * 	If it's on uses the method updateTreeList
+	 * Method uses by LinksWindows Check if the synchronization is on If it's on
+	 * uses the method updateTreeList
 	 */
-	public void update(){
-		if(isSynch)
+	public void update() {
+		if (isSynch)
 			updateTreeList();
 	}
 
@@ -411,59 +401,55 @@ public class AgentVizFrame extends JFrame {
 	 * Update treeList.
 	 */
 	private void updateTreeList() {
-		if(entity != null){
-			setTitle(entity.getName() + " Vizualization tool"+ "   Type : "+ entity.getType());
+		if (entity != null) {
+			setTitle(entity.getName() + " Vizualization tool" + "   Type : " + entity.getType());
 			TreePath[] path = attributeTree.getSelectionPaths();
 
-			//We use reload if we have to create entity or relation
+			// We use reload if we have to create entity or relation
 			boolean needReload = false;
 			DefaultTreeModel model = (DefaultTreeModel) this.attributeTree.getModel();
 			DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-			if(root.isLeaf()){
-				DefaultMutableTreeNode entityNode = new DefaultMutableTreeNode("Entity : "+entity.getName());
+			if (root.isLeaf()) {
+				DefaultMutableTreeNode entityNode = new DefaultMutableTreeNode("Entity : " + entity.getName());
 				model.insertNodeInto(entityNode, root, 0);
 				needReload = true;
 			}
 			DefaultMutableTreeNode entityNode = (DefaultMutableTreeNode) root.getFirstChild();
 
 			this.redrawTree(entityNode, this.entity.getAttributes(), model);
-			//Verify if the tree already knows the attributes
+			// Verify if the tree already knows the attributes
 
-			//DefaultMutableTreeNode relNode = new DefaultMutableTreeNode("Relations");
-			if(root.getChildCount()<2){
+			// DefaultMutableTreeNode relNode = new
+			// DefaultMutableTreeNode("Relations");
+			if (root.getChildCount() < 2) {
 				DefaultMutableTreeNode relNode = new DefaultMutableTreeNode("Relations");
-				//root.add(relNode);
+				// root.add(relNode);
 				model.insertNodeInto(relNode, root, 1);
 				needReload = true;
 			}
 			DefaultMutableTreeNode relNode = (DefaultMutableTreeNode) root.getChildAt(1);
 
-
-			/*for(int i =relNode.getChildCount()-1; i>= 1;i--){
-				boolean alive = false;
-				for(Relation r : this.relations){
-					if(relNode.getChildAt(i).toString().equals(r.getName())){
-						alive = true;
-					}
-				}
-				if(!alive)
-					model.removeNodeFromParent((MutableTreeNode) relNode.getChildAt(i));
-			}*/
+			/*
+			 * for(int i =relNode.getChildCount()-1; i>= 1;i--){ boolean alive =
+			 * false; for(Relation r : this.relations){
+			 * if(relNode.getChildAt(i).toString().equals(r.getName())){ alive =
+			 * true; } } if(!alive) model.removeNodeFromParent((MutableTreeNode)
+			 * relNode.getChildAt(i)); }
+			 */
 
 			for (Relation r : this.relations) {
 				boolean exist = false;
 				int pos = -1;
-				for(int i =0; i < relNode.getChildCount(); i++){
-					if(relNode.getChildAt(i).toString().equals(r.getName())){
+				for (int i = 0; i < relNode.getChildCount(); i++) {
+					if (relNode.getChildAt(i).toString().equals(r.getName())) {
 						exist = true;
 						pos = i;
 					}
 				}
-				if(exist){
+				if (exist) {
 					DefaultMutableTreeNode relationNode = (DefaultMutableTreeNode) relNode.getChildAt(pos);
 					this.redrawTree(relationNode, r.getAttributes(), model);
-				}
-				else{
+				} else {
 					DefaultMutableTreeNode relationNode = new DefaultMutableTreeNode(r.getName());
 					model.insertNodeInto(relationNode, relNode, relNode.getChildCount());
 					this.redrawTree(relationNode, r.getAttributes(), model);
@@ -472,32 +458,32 @@ public class AgentVizFrame extends JFrame {
 
 			attributeTree.getSelectionModel().addSelectionPaths(path);
 
-
-			if(needReload)
+			if (needReload)
 				model.reload();
-			else{
+			else {
 				model.nodeChanged(root);
 				model.nodeChanged(relNode);
 				model.nodeChanged(entityNode);
 			}
 		}
-		//attributeTree.setModel(tree);
-		//attributeTree.setRootVisible(false);
+		// attributeTree.setModel(tree);
+		// attributeTree.setRootVisible(false);
 	}
-	
-	public void redrawTree(DefaultMutableTreeNode node, HashMap<String,ArrayList<Attribute>> h,DefaultTreeModel model){
-		//Verify if the tree already knows the attributes
+
+	public void redrawTree(DefaultMutableTreeNode node, HashMap<String, ArrayList<Attribute>> h,
+			DefaultTreeModel model) {
+		// Verify if the tree already knows the attributes
 		for (String carac : h.keySet()) {
 			boolean exist = false;
-			int pos =0;
-			for(int i = 0; i < node.getChildCount(); i++){
-				if(node.getChildAt(i).toString().equals(carac)){
+			int pos = 0;
+			for (int i = 0; i < node.getChildCount(); i++) {
+				if (node.getChildAt(i).toString().equals(carac)) {
 					exist = true;
 					pos = i;
 				}
 			}
-			//If no we create it
-			if(!(exist)){
+			// If no we create it
+			if (!(exist)) {
 				DefaultMutableTreeNode newCarac = new DefaultMutableTreeNode(carac);
 				model.insertNodeInto(newCarac, node, node.getChildCount());
 
@@ -506,38 +492,40 @@ public class AgentVizFrame extends JFrame {
 				}
 				model.nodeChanged(node);
 			}
-			//If yes we check if the values are the same
-			else{
+			// If yes we check if the values are the same
+			else {
 				boolean valExist = true;
 				ArrayList<Attribute> addList = new ArrayList<Attribute>();
-				for(Attribute att : h.get(carac)){
+				for (Attribute att : h.get(carac)) {
 					boolean find = false;
-					for(int i = 0; i < node.getChildAt(pos).getChildCount();i++){
-						if(node.getChildAt(pos).getChildAt(i).toString().equals(att.toString()))
+					for (int i = 0; i < node.getChildAt(pos).getChildCount(); i++) {
+						if (node.getChildAt(pos).getChildAt(i).toString().equals(att.toString()))
 							find = true;
 					}
-					if(!(find)){
+					if (!(find)) {
 						valExist = false;
 						addList.add(att);
 					}
 				}
-				//If no we replace the old value with the new
-				if(!(valExist)){
-					for(Attribute att : addList){
+				// If no we replace the old value with the new
+				if (!(valExist)) {
+					for (Attribute att : addList) {
 						boolean creat = false;
-						for(int i =0; i < node.getChildAt(pos).getChildCount(); i++){
-							if(node.getChildAt(pos).getChildAt(i).toString().contains(att.getName())){
+						for (int i = 0; i < node.getChildAt(pos).getChildCount(); i++) {
+							if (node.getChildAt(pos).getChildAt(i).toString().contains(att.getName())) {
 								TreeNode tmp = node.getChildAt(pos).getChildAt(i);
-								model.insertNodeInto(new DefaultMutableTreeNode(att), (MutableTreeNode) node.getChildAt(pos), 0);
+								model.insertNodeInto(new DefaultMutableTreeNode(att),
+										(MutableTreeNode) node.getChildAt(pos), 0);
 								model.removeNodeFromParent((MutableTreeNode) tmp);
 								creat = true;
 							}
 						}
-						if(!creat)
-							model.insertNodeInto(new DefaultMutableTreeNode(att), (MutableTreeNode) node.getChildAt(pos), node.getChildAt(pos).getChildCount());
+						if (!creat)
+							model.insertNodeInto(new DefaultMutableTreeNode(att),
+									(MutableTreeNode) node.getChildAt(pos), node.getChildAt(pos).getChildCount());
 
 					}
-					//TreeNode tmp = entityNode.getChildAt(pos).getChildAt(0);
+					// TreeNode tmp = entityNode.getChildAt(pos).getChildAt(0);
 
 				}
 				model.nodeChanged(node);
@@ -578,9 +566,9 @@ public class AgentVizFrame extends JFrame {
 					}
 					if (theAttribute.getTypeToDraw().equals(AttributeStyle.BAR)) {
 						LxPlot.getChart(t.getType() + ">" + t.getName() + ":" + t.getCaracList() + ":" + " bar",
-								ChartType.BAR).add(s+1, 0, (Double) theAttribute.getValue());
+								ChartType.BAR).add(s + 1, 0, (Double) theAttribute.getValue());
 						LxPlot.getChart(t.getType() + ">" + t.getName() + ":" + t.getCaracList() + ":" + " bar",
-								ChartType.BAR).add(s+2, 1, (Double) theAttribute.getValue());
+								ChartType.BAR).add(s + 2, 1, (Double) theAttribute.getValue());
 					}
 					if (theAttribute.getTypeToDraw().equals(AttributeStyle.AVRT)) {
 						Double tab[] = (Double[]) theAttribute.getValue();
@@ -631,7 +619,7 @@ public class AgentVizFrame extends JFrame {
 		String s = "";
 		Lock l = new ReentrantLock();
 		l.lock();
-		try{
+		try {
 			for (DrawableAttribute t : this.toLook) {
 				if (t.getType().equals(DrawableAttribute.Type.ENTITY)) {
 					s = s + "{" + t.getCaracList() + "} " + t.getAttribute().toString() + "\n";
@@ -641,15 +629,14 @@ public class AgentVizFrame extends JFrame {
 				}
 			}
 			if (s == "") {
-				if(toLook.isEmpty()){
+				if (toLook.isEmpty()) {
 					s = "Nothing is selected";
-				}else{
+				} else {
 					s = "Entity is dead or not alive yet";
 				}
 			}
 			txtpnLook.setText(s);
-		}
-		finally{
+		} finally {
 			l.unlock();
 		}
 	}
@@ -658,7 +645,7 @@ public class AgentVizFrame extends JFrame {
 	 * Update the vizFrame.
 	 * 
 	 * @param num
-	 * 			The number of the snapshot.
+	 *            The number of the snapshot.
 	 */
 	public void notifyJump(long num) {
 		if (isSynch) {
@@ -676,10 +663,11 @@ public class AgentVizFrame extends JFrame {
 
 	/**
 	 * Set lblBoxTxt
+	 * 
 	 * @param txt
-	 * 			The text.
+	 *            The text.
 	 * @param num
-	 * 			The number.
+	 *            The number.
 	 */
 	public void setlblBotTxt(String txt, long num) {
 		currentFrameNum = num;
@@ -689,7 +677,7 @@ public class AgentVizFrame extends JFrame {
 	/**
 	 * Return the name.
 	 */
-	public String getName(){
+	public String getName() {
 		return this.aname;
 	}
 }
