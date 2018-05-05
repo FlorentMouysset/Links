@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 import fr.irit.smac.core.Links;
+import fr.irit.smac.core.LinksUI;
 import fr.irit.smac.model.Snapshot;
 
 /**
@@ -19,13 +20,13 @@ public class LinksImpl extends UnicastRemoteObject implements LinksRemote, Seria
 	 */
 	private static final long serialVersionUID = 564199253962112174L;
 
-	private Links links;
+	private LinksUI links;
 
 	protected LinksImpl() throws RemoteException {
 		super();
 	}
 
-	public Links getLinks() throws RemoteException {
+	public LinksUI getLinks() throws RemoteException {
 		return this.links;
 	}
 
@@ -35,13 +36,13 @@ public class LinksImpl extends UnicastRemoteObject implements LinksRemote, Seria
 
 	@Override
 	public void runLinks() throws RemoteException {
-		this.links = new Links();
+		this.links = new LinksUI();
 
 	}
 
 	@Override
 	public void buildExperiment(String xpName) throws RemoteException {
-		this.links = new Links(xpName);
+		this.links = new LinksUI(xpName);
 
 	}
 

@@ -37,6 +37,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import fr.irit.smac.core.Links;
+import fr.irit.smac.core.LinksUI;
 import fr.irit.smac.core.MongoDBDelegate;
 import fr.irit.smac.model.Attribute.AttributeStyle;
 import fr.irit.smac.model.Entity;
@@ -52,7 +53,7 @@ public class XpChooser extends JFrame {
 
 	private JPanel contentPane;
 	private JList<String> list;
-	private Links linksRef;
+	private LinksUI linksRef;
 	private NewXpWindows xpWindows;
 	private JTextArea textField;
 
@@ -62,7 +63,7 @@ public class XpChooser extends JFrame {
 	 * @param links
 	 *            The reference to the links window.
 	 */
-	public XpChooser(Links links) {
+	public XpChooser(LinksUI links) {
 		setTitle("Links: Xp Chooser");
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -239,7 +240,7 @@ public class XpChooser extends JFrame {
 	 *            The name of the experience.
 	 */
 	public void delete(String xpName) {
-		MongoDBDelegate.delete(xpName);
+		linksRef.deleteExperiment(xpName);
 	}
 
 	/**
@@ -249,7 +250,7 @@ public class XpChooser extends JFrame {
 	 *            The name of the experience.
 	 */
 	public void create(String xpName) {
-		MongoDBDelegate.create(xpName, linksRef.existsExperiment(xpName));
+		linksRef.createExperiment(xpName);
 		this.redrawList();
 	}
 
@@ -262,7 +263,7 @@ public class XpChooser extends JFrame {
 	 *            The path to the css.
 	 */
 	public void create(String xpName, String cssPath) {
-		MongoDBDelegate.create(xpName, cssPath);
+		linksRef.createExperiment(xpName, cssPath);
 		this.redrawList();
 	}
 
@@ -273,7 +274,7 @@ public class XpChooser extends JFrame {
 	 *            The name of the experience.
 	 */
 	public void drop(String xpName) {
-		MongoDBDelegate.drop(xpName);
+		linksRef.dropExperiment(xpName);
 	}
 
 	/**

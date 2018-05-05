@@ -22,7 +22,7 @@ public class Example {
 	 */
 	public static void main(String[] args) {
 
-		Links links = new Links("test");
+		Links links = new LinksUI("test");
 
 		Snapshot s = new Snapshot();
 
