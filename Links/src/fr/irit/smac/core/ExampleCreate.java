@@ -20,8 +20,6 @@ public class ExampleCreate {
 		s.addEntity("Rufus", "Dog");
 		s.addRelation("Toto", "Rufus", "TotoPossedeRufus", false, "possede");
 
-		s.addEntity("Toto", "Humain");
-
 		Experiment exp = links.createExperiment("test");
 		exp.addSnapshotToExperiment(s);
 

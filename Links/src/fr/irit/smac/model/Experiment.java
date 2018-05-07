@@ -223,4 +223,8 @@ public class Experiment {
 		}
 		return t;
 	}
+
+	public int getExperimentSize() {
+		return getCurrentMaxSnapshotNum() + 1;
+	}
 }

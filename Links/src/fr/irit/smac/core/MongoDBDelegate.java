@@ -112,9 +112,12 @@ public class MongoDBDelegate {
 	 * @return True if the experiment exists, false otherwise.
 	 */
 	public boolean existsExperiment(String xpName) {
-		MongoCollection<Document> maCollection = database.getCollection(collectionNameExperimentList);
-		Document myXP = maCollection.find(Filters.eq("xpName", xpName)).first();
-		return myXP != null;
+		// MongoCollection<Document> maCollection =
+		// database.getCollection(collectionNameExperimentList);
+		// Document myXP = maCollection.find(Filters.eq("xpName",
+		// xpName)).first();
+		// database.listCollections().filter(Filters.eq("xpName", xpName)).
+		return null != database.getCollection(xpName);
 	}
 
 	public void updateCollectionDescription(String collectionNameToAddDescription, String descriptionToAdd) {
@@ -325,8 +328,8 @@ public class MongoDBDelegate {
 		currentMongoClient.remove(defaultdatabasename);
 	}
 
-	public Experiment getExperiment(String xpName) {
-		// TODO Auto-generated method stub
-		return null;
+	public Experiment getExperiment(String experimentName) {
+		Experiment result = new Experiment(experimentName);
+		return result;
 	}
 }
