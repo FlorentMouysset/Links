@@ -1,25 +1,19 @@
 package fr.irit.smac.core;
 
-import fr.irit.smac.model.Snapshot;
+import fr.irit.smac.model.Experiment;
 
 public interface ILinks {
 
-	void addSnapshot(Snapshot s);
+	boolean existsExperiment(String xpName);
 
-	void addSnapshot(Snapshot s, String xpName);
+	Experiment createExperiment(String xpName);
 
-	void createExperiment(String xpName);
-
-	void createExperiment(String xpName, String pathCss);
+	Experiment getExperiment(String string);
 
 	void deleteExperiment(String xpName);
 
-	boolean existsExperiment(String xpName);
-
 	void dropExperiment(String xpName);
 
-	void informClose();
-
-	String getMongoPath();
+	void shutdown();
 
 }

@@ -83,12 +83,13 @@ public class Snapshot implements Serializable {
 	 * @return A reference to the newly created entity.
 	 */
 	public Entity addEntity(String name, String type, double x, double y) {
-		Entity a = new Entity(name, type, x , y);
+		Entity a = new Entity(name, type, x, y);
 		if (!entityList.contains(a)) {
 			entityList.add(a);
 		}
 		return a;
 	}
+
 	/**
 	 * Test if an agent in the agent list has the name passed in parameter.
 	 * 
@@ -178,6 +179,25 @@ public class Snapshot implements Serializable {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Return a list of all relations
+	 * 
+	 * @param aname
+	 *            The name of the relation
+	 * @param num
+	 *            The number of the snapshot
+	 * @return relations
+	 */
+	public ArrayList<Relation> getRelations(String aname) {
+		ArrayList<Relation> relations = new ArrayList<Relation>();
+		for (Relation r : this.relations) {
+			if (r.getA().getName().equals(aname) || r.getB().getName().equals(aname)) {
+				relations.add(r);
+			}
+		}
+		return relations;
 	}
 
 	/**
