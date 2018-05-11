@@ -6,10 +6,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
+import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -17,10 +18,11 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.ListCollectionsIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
@@ -28,11 +30,7 @@ import fr.irit.smac.model.Experiment;
 
 public class MongoDBDelegate {
 
-	/**
-	 * Name of the MongoDB collection used by the application to list the
-	 * experiments name and path to CSS files.
-	 */
-	private static final String collectionNameExperimentList = "xpList";
+	private static final String SPECIAL_DOC_NAME = "xpName";
 
 	/**
 	 * The MongoClient. By default, its connects to the local host.
@@ -112,38 +110,39 @@ public class MongoDBDelegate {
 	 * @return True if the experiment exists, false otherwise.
 	 */
 	public boolean existsExperiment(String xpName) {
-		// MongoCollection<Document> maCollection =
-		// database.getCollection(collectionNameExperimentList);
-		// Document myXP = maCollection.find(Filters.eq("xpName",
-		// xpName)).first();
-		// database.listCollections().filter(Filters.eq("xpName", xpName)).
 		return null != database.getCollection(xpName);
 	}
 
-	public void updateCollectionDescription(String collectionNameToAddDescription, String descriptionToAdd) {
-		MongoCollection<Document> collection = database.getCollection(collectionNameToAddDescription);
-		Document doc = collection.find(Filters.eq("LinksDescriptionXP", "The description")).first();
-		Document newDocument = new Document("LinksDescriptionXP", "The description").append("Desc : ",
-				"DescriptionOfXP " + descriptionToAdd);
-		if (doc != null) {
-			collection.findOneAndReplace(new BasicDBObject().append("LinksDescriptionXP", "The description"),
-					newDocument);
-		} else {
-			collection.insertOne(newDocument);
-		}
-	}
+	// public void updateCollectionDescription(String
+	// collectionNameToAddDescription, String descriptionToAdd) {
+	// MongoCollection<Document> collection =
+	// database.getCollection(collectionNameToAddDescription);
+	// Document doc = collection.find(Filters.eq("LinksDescriptionXP", "The
+	// description")).first();
+	// Document newDocument = new Document("LinksDescriptionXP", "The
+	// description").append("Desc : ",
+	// "DescriptionOfXP " + descriptionToAdd);
+	// if (doc != null) {
+	// collection.findOneAndReplace(new
+	// BasicDBObject().append("LinksDescriptionXP", "The description"),
+	// newDocument);
+	// } else {
+	// collection.insertOne(newDocument);
+	// }
+	// }
 
 	public void update(String xpName, String propertyKey, Object propertyValue) {
 		MongoCollection<Document> collection = MongoDBDelegate.getDataBase(Links.defaultDataBaseName)
-				.getCollection(collectionNameExperimentList);
-		collection.deleteMany(Filters.eq("xpName", xpName));
-		collection.insertOne(new Document("xpName", xpName).append(propertyKey, propertyValue));
+				.getCollection(xpName);
+		// collection.deleteMany(Filters.eq("xpName", xpName));
+		collection.insertOne(new Document(SPECIAL_DOC_NAME, xpName).append(propertyKey, propertyValue));
 
 	}
 
 	public void delete(String xpName) {
 		database.getCollection(xpName).drop();
-		database.getCollection(collectionNameExperimentList).findOneAndDelete(Filters.eq("xpName", xpName));
+		// database.getCollection(collectionNameExperimentList).findOneAndDelete(Filters.eq(SPECIAL_DOC_NAME,
+		// xpName));
 	}
 
 	public Experiment create(String xpName) {
@@ -156,29 +155,30 @@ public class MongoDBDelegate {
 		 */
 
 		MongoCollection<Document> collection2 = database.getCollection(xpName);
-		collection2.deleteMany(Filters.eq("xpName", xpName));
-		collection2.insertOne(new Document("xpName", xpName).append("maxNum", 0));
+		collection2.deleteMany(Filters.eq(SPECIAL_DOC_NAME, xpName));
+		collection2.insertOne(new Document(SPECIAL_DOC_NAME, xpName).append("maxNum", 0));
 		return new Experiment(xpName);
 	}
 
+	@Deprecated
 	public void drop(String xpName) {
 		MongoCollection<Document> collection2 = database.getCollection(xpName);
 		if (collection2 != null) {
 			collection2.drop();
-			collection2.insertOne(new Document("xpName", xpName).append("maxNum", 0));
+			collection2.insertOne(new Document(SPECIAL_DOC_NAME, xpName).append("maxNum", 0));
 		}
 	}
 
-	public Vector<String> getExperiencesList() {
-		MongoCollection<Document> maCollection = database.getCollection(collectionNameExperimentList);
+	public Set<String> getExperiencesList() {
+		ListCollectionsIterable<Document> allDocs = database.listCollections();
+		Set<String> result = new HashSet<String>();
 
-		Vector<String> result = new Vector<String>();
-		for (Document document : maCollection.find()) {
-			Iterator<Entry<String, Object>> it = document.entrySet().iterator();
-			it.next();
-			String xpName = (String) it.next().getValue();
-			result.addElement(xpName);
+		MongoCursor<Document> ite = allDocs.iterator();
+		while (ite.hasNext()) {
+			Document doc = ite.next();
+			result.add(doc.getString("name"));
 		}
+
 		return result;
 	}
 

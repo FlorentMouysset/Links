@@ -1,6 +1,7 @@
 package fr.irit.smac.core;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import com.mongodb.ServerAddress;
 
@@ -138,6 +139,10 @@ public class Links implements ILinks, Serializable {
 
 	public String getCurrentXP() {
 		return currentXP;
+	}
+
+	public Set<String> getExperiments() {
+		return mongoDBDelegate.getExperiencesList();
 	}
 
 }
