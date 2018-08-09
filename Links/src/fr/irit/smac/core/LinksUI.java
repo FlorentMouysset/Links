@@ -20,7 +20,7 @@ public class LinksUI extends Links {
 	}
 
 	public void addSnapshot(Snapshot snapshot, String expName) {
-		super.createExperiment(expName).addSnapshotToExperiment(snapshot);
+		super.getExperiment(expName).addSnapshotToExperiment(snapshot);
 	}
 
 	public void deleteWindow() {

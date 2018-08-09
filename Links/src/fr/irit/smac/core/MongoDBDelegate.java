@@ -339,7 +339,9 @@ public class MongoDBDelegate {
 		Experiment experimentTarget = create(collectionNameTarget);
 		for (int currentSnapnum = 0; currentSnapnum < experimentSource.getExperimentSize(); currentSnapnum++) {
 			Snapshot snap = experimentSource.getSnaptshot(currentSnapnum);
-			experimentTarget.addSnapshotToExperiment(snap);
+			if (null != snap) {
+				experimentTarget.addSnapshotToExperiment(snap);
+			}
 		}
 	}
 }
