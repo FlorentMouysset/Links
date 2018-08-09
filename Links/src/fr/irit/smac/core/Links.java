@@ -145,4 +145,8 @@ public class Links implements ILinks, Serializable {
 		return mongoDBDelegate.getExperiencesList();
 	}
 
+	public void duplicateExperiments(String collectionNameSource, String collectionNameTarget) {
+		mongoDBDelegate.duplicateExperiment(collectionNameSource, collectionNameTarget);
+	}
+
 }

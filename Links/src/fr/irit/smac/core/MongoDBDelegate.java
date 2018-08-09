@@ -27,6 +27,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import fr.irit.smac.model.Experiment;
+import fr.irit.smac.model.Snapshot;
 
 public class MongoDBDelegate {
 
@@ -331,5 +332,14 @@ public class MongoDBDelegate {
 	public Experiment getExperiment(String experimentName) {
 		Experiment result = new Experiment(experimentName);
 		return result;
+	}
+
+	public void duplicateExperiment(String collectionNameSource, String collectionNameTarget) {
+		Experiment experimentSource = getExperiment(collectionNameSource);
+		Experiment experimentTarget = create(collectionNameTarget);
+		for (int currentSnapnum = 0; currentSnapnum < experimentSource.getExperimentSize(); currentSnapnum++) {
+			Snapshot snap = experimentSource.getSnaptshot(currentSnapnum);
+			experimentTarget.addSnapshotToExperiment(snap);
+		}
 	}
 }

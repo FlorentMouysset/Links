@@ -31,4 +31,9 @@ public class LinksUI extends Links {
 		return new LinksWindows(this.getExperiment(collectionName));
 	}
 
+	public void duplicateExperiments(String collectionNameSource, String collectionNameTarget) {
+		super.duplicateExperiments(collectionNameSource, collectionNameTarget);
+
+	}
+
 }
