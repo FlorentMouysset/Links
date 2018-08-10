@@ -63,10 +63,16 @@ public class MongoClientBackFactory {
 		return databaseResult;
 	}
 
-	public static void closeAllDatabases(ServerAddress addr) {
+	public static void closeAll(ServerAddress addr) {
 		if (null == addr) {
 			existingLocalhostMongoDB.clear();
+			if (null != currentLocalhostClient) {
+				currentLocalhostClient.close();
+				currentLocalhostClient = null;
+			}
 		} else {
+			existingDistantMongoClients.get(addr).close();
+			existingDistantMongoClients.remove(addr);
 			existingDistantMongoDB.remove(addr);
 		}
 	}

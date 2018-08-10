@@ -70,11 +70,14 @@ public class MongoDBDelegate {
 		this.addr = addr;
 		initMongoConnection(addr, dataBaseName);
 
+		initExperiment(xpName);
+	}
+
+	private void initExperiment(String xpName) {
 		if (StringUtils.isNotBlank(xpName)) {
 			if (!existsExperiment(xpName)) {
 				create(xpName);
 			}
-			// this.currentXP = xpName;
 		}
 	}
 
@@ -308,8 +311,8 @@ public class MongoDBDelegate {
 
 
 	public void closeConnexion() {
-		mongoClient.close();
-		MongoClientBackFactory.closeAllDatabases(addr);
+		MongoClientBackFactory.closeAll(addr);
+		mongoClient = null;
 	}
 
 	public Experiment getExperiment(String experimentName) {
