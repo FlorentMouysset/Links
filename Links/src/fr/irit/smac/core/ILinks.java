@@ -12,8 +12,6 @@ public interface ILinks {
 
 	void deleteExperiment(String xpName);
 
-	void dropExperiment(String xpName);
-
 	void shutdown();
 
 }

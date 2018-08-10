@@ -5,10 +5,8 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -36,12 +34,12 @@ public class MongoDBDelegate {
 	/**
 	 * The MongoClient. By default, its connects to the local host.
 	 */
-	private static MongoClient mongoClient;
+	private MongoClient mongoClient;
 
 	/**
 	 * The MongoDataBase for the Links application.
 	 */
-	private static MongoDatabase database;
+	private MongoDatabase database;
 
 	/**
 	 * The mongoPath if we want to execute it
@@ -58,18 +56,19 @@ public class MongoDBDelegate {
 	 */
 	private String resMong = "setMongo.txt";
 
-	private final String dataBaseName;
+	private ServerAddress addr;
 
-	private final static Map<String, MongoDatabase> currentMongoClient = new HashMap<>();
+	// private final String dataBaseName;
+
 
 	public MongoDBDelegate(ServerAddress addr, String xpName, String dataBaseName) {
-		this.dataBaseName = dataBaseName;
-		initMongo(xpName, addr);
+		initMongo(xpName, addr, dataBaseName);
 	}
 
-	private void initMongo(String xpName, ServerAddress addr) {
+	private void initMongo(String xpName, ServerAddress addr, String dataBaseName) {
 		lireMongoPath();
-		initMongoConnection(addr);
+		this.addr = addr;
+		initMongoConnection(addr, dataBaseName);
 
 		if (StringUtils.isNotBlank(xpName)) {
 			if (!existsExperiment(xpName)) {
@@ -84,17 +83,14 @@ public class MongoDBDelegate {
 	 * 
 	 * @param addr
 	 *            The address of the server. If null use the default address.
+	 * @param dataBaseName
 	 */
-	private void initMongoConnection(ServerAddress addr) {
+	private void initMongoConnection(ServerAddress addr, String dataBaseName) {
 		checkMongo();
 		try {
-			if (null == addr) {
-				mongoClient = new MongoClient();
-			} else {
-				mongoClient = new MongoClient(addr);
-			}
-			database = mongoClient.getDatabase(dataBaseName);
-			currentMongoClient.put(dataBaseName, database);
+			mongoClient = MongoClientBackFactory.getMongoClientInstance(addr);
+			database = MongoClientBackFactory.getDatabase(addr, dataBaseName);
+
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -133,8 +129,7 @@ public class MongoDBDelegate {
 	// }
 
 	public void update(String xpName, String propertyKey, Object propertyValue) {
-		MongoCollection<Document> collection = MongoDBDelegate.getDataBase(Links.defaultDataBaseName)
-				.getCollection(xpName);
+		MongoCollection<Document> collection = database.getCollection(xpName);
 		// collection.deleteMany(Filters.eq("xpName", xpName));
 		collection.insertOne(new Document(SPECIAL_DOC_NAME, xpName).append(propertyKey, propertyValue));
 
@@ -158,16 +153,7 @@ public class MongoDBDelegate {
 		MongoCollection<Document> collection2 = database.getCollection(xpName);
 		collection2.deleteMany(Filters.eq(SPECIAL_DOC_NAME, xpName));
 		collection2.insertOne(new Document(SPECIAL_DOC_NAME, xpName).append("maxNum", 0));
-		return new Experiment(xpName);
-	}
-
-	@Deprecated
-	public void drop(String xpName) {
-		MongoCollection<Document> collection2 = database.getCollection(xpName);
-		if (collection2 != null) {
-			collection2.drop();
-			collection2.insertOne(new Document(SPECIAL_DOC_NAME, xpName).append("maxNum", 0));
-		}
+		return new Experiment(database, xpName);
 	}
 
 	public Set<String> getExperiencesList() {
@@ -320,17 +306,14 @@ public class MongoDBDelegate {
 		return mongoPath;
 	}
 
-	public static MongoDatabase getDataBase(String defaultdatabasename) {
-		return currentMongoClient.get(defaultdatabasename);
-	}
 
-	public void closeDataBase(String defaultdatabasename) {
+	public void closeConnexion() {
 		mongoClient.close();
-		currentMongoClient.remove(defaultdatabasename);
+		MongoClientBackFactory.closeAllDatabases(addr);
 	}
 
 	public Experiment getExperiment(String experimentName) {
-		Experiment result = new Experiment(experimentName);
+		Experiment result = new Experiment(database, experimentName);
 		return result;
 	}
 

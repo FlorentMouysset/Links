@@ -8,14 +8,13 @@ import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import fr.irit.smac.attributes.AVRTAttribute;
 import fr.irit.smac.attributes.AVTAttribute;
 import fr.irit.smac.attributes.DoubleAttribute;
 import fr.irit.smac.attributes.StringAttribute;
-import fr.irit.smac.core.Links;
-import fr.irit.smac.core.MongoDBDelegate;
 import fr.irit.smac.model.Attribute.AttributeStyle;
 
 public class Experiment {
@@ -28,9 +27,9 @@ public class Experiment {
 		return currentMaxSnapshotNum;
 	}
 
-	public Experiment(String experimentName) {
+	public Experiment(MongoDatabase database, String experimentName) {
 		this.experimentName = experimentName;
-		collection = MongoDBDelegate.getDataBase(Links.defaultDataBaseName).getCollection(experimentName);
+		collection = database.getCollection(experimentName);
 		Document myXP = collection.find(Filters.eq("xpName", experimentName)).first();
 		if (myXP != null) {
 			Iterator<Entry<String, Object>> it = myXP.entrySet().iterator();

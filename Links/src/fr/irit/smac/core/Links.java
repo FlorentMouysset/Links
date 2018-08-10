@@ -118,23 +118,11 @@ public class Links implements ILinks, Serializable {
 	}
 
 	/**
-	 * Drop the experiment with the given name and reset the current snapNumber
-	 * at 0.
-	 * 
-	 * @param xpName
-	 *            The name of the experiment.
-	 */
-	@Override
-	public void dropExperiment(String xpName) {
-		mongoDBDelegate.drop(xpName);
-	}
-
-	/**
 	 * Release memory
 	 */
 	@Override
 	public void shutdown() {
-		mongoDBDelegate.closeDataBase(defaultDataBaseName);
+		mongoDBDelegate.closeConnexion();
 	}
 
 	public String getCurrentXP() {
