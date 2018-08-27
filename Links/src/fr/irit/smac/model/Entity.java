@@ -311,4 +311,10 @@ public class Entity implements Serializable {
 		ctype = type;
 	}
 
+	@Override
+	public String toString() {
+		return "Entity [name=" + name + ", stype=" + stype + ", ctype=" + ctype + ", attributes=" + attributes
+				+ ", coorX=" + coorX + ", coorY=" + coorY + "]";
+	}
+
 }
