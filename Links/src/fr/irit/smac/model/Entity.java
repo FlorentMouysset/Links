@@ -131,19 +131,6 @@ public class Entity implements Serializable {
 	}
 
 	/**
-	 * Add a list of attribute.
-	 * 
-	 * @param name
-	 *            The name of the list.
-	 * @param list
-	 *            The list of attributes.
-	 * @deprecated
-	 */
-	public void addAttribute(String name, ArrayList<Attribute> list) {
-		attributes.put(name, list);
-	}
-
-	/**
 	 * Add one attribute to the precised list.
 	 * 
 	 * @param attributeListName
