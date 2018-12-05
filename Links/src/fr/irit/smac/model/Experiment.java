@@ -200,13 +200,13 @@ public class Experiment {
 				a = AttributeStyle.BAR;
 			}
 			t = new DoubleAttribute(caracName,
-					Double.valueOf(toString.substring(toString.indexOf("=") + 1, toString.length())), a);
+					Double.valueOf(toString.substring(toString.indexOf("=") + 2, toString.length())), a);
 		} else {
 			if (toString.contains("String")) {
-				t = new StringAttribute(caracName, (toString.substring(toString.indexOf("=") + 1, toString.length())));
+				t = new StringAttribute(caracName, (toString.substring(toString.indexOf("=") + 2, toString.length())));
 			} else {
 				if (toString.contains("AVRT")) {
-					String value = (toString.substring(toString.indexOf("=") + 1, toString.length()));
+					String value = (toString.substring(toString.indexOf("=") + 2, toString.length()));
 					Scanner sc = new Scanner(value);
 					sc.useDelimiter(":");
 					Double lowerValue = Double.valueOf(sc.next());
