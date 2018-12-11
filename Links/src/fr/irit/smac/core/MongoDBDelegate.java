@@ -294,7 +294,7 @@ public class MongoDBDelegate {
 			System.err.println("BufferedWriter error");
 		}
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(200);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
