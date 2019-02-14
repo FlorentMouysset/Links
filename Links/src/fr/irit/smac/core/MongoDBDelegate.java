@@ -16,7 +16,6 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
-import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.ListCollectionsIterable;
 import com.mongodb.client.MongoCollection;
@@ -34,7 +33,6 @@ public class MongoDBDelegate {
 	/**
 	 * The MongoClient. By default, its connects to the local host.
 	 */
-	private MongoClient mongoClient;
 
 	/**
 	 * The MongoDataBase for the Links application.
@@ -91,7 +89,7 @@ public class MongoDBDelegate {
 	private void initMongoConnection(ServerAddress addr, String dataBaseName) {
 		checkMongo();
 		try {
-			mongoClient = MongoClientBackFactory.getMongoClientInstance(addr);
+			MongoClientBackFactory.getMongoClientInstance(addr);
 			database = MongoClientBackFactory.getDatabase(addr, dataBaseName);
 
 		} catch (Exception e) {
@@ -312,7 +310,6 @@ public class MongoDBDelegate {
 
 	public void closeConnexion() {
 		MongoClientBackFactory.closeAll(addr);
-		mongoClient = null;
 	}
 
 	public Experiment getExperiment(String experimentName) {
