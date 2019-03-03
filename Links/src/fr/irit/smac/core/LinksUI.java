@@ -1,5 +1,7 @@
 package fr.irit.smac.core;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import fr.irit.smac.model.Snapshot;
 import fr.irit.smac.ui.LinksWindows;
 
@@ -34,6 +36,10 @@ public class LinksUI extends Links {
 	public void duplicateExperiments(String collectionNameSource, String collectionNameTarget) {
 		super.duplicateExperiments(collectionNameSource, collectionNameTarget);
 
+	}
+
+	public void takeAScreenShot(String path) {
+		throw new NotImplementedException("NOT IN THIS VERSION");
 	}
 
 }
